@@ -1,0 +1,41 @@
+# ==============================================================================
+# CLIA - Command Line Interface Assistant
+# Core Dependencies
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Member 1: CLI Interface & Agent Engine
+# ------------------------------------------------------------------------------
+rich>=13.7.0                    # Terminal formatting, panels, tables, and colored logs
+prompt-toolkit>=3.0.40          # Interactive REPL features, autocompletion, and history
+pydantic>=2.6.0                 # Schema validation, configuration settings, & state models
+pydantic-settings>=2.2.0        # Environment variable and config file management
+python-dotenv>=1.0.1            # Load environment variables from .env files
+
+# ------------------------------------------------------------------------------
+# Member 1: Model Provider Abstraction
+# ------------------------------------------------------------------------------
+langchain-core>=0.2.0           # Unified message types, tool calling interfaces, & outputs
+langchain-community>=0.2.0      # Core integration utilities
+langchain-anthropic>=0.1.0      # Anthropic Claude model bindings (Claude 3.5 Sonnet)
+langchain-openai>=0.1.0         # OpenAI model bindings (GPT-4o)
+langchain-ollama>=0.1.0         # Ollama local model bindings (Qwen2.5-Coder / Llama 3)
+langchain-google-genai          # Google Gemini model
+httpx>=0.27.0                   # Async HTTP client for custom provider/API calls
+
+# ------------------------------------------------------------------------------
+# Member 2: MCP Client Integration
+# ------------------------------------------------------------------------------
+mcp>=1.0.0                      # Official Model Context Protocol SDK (client & server)
+anyio>=4.3.0                    # Asynchronous I/O abstraction for stdio transport
+
+# ------------------------------------------------------------------------------
+# Member 3: Custom Advanced RAG MCP Server
+# ------------------------------------------------------------------------------
+chromadb>=0.5.0                 # Local persistent vector database
+sentence-transformers>=2.7.0    # Local text embeddings (e.g., all-MiniLM-L6-v2)
+sentence-transformers[train]    # Enables Cross-Encoder support for re-ranking
+torch>=2.2.0                    # Neural network support for embeddings and re-rankers
+langchain-text-splitters>=0.2.0 # Document splitting and chunking strategies
+pypdf>=4.2.0                    # Parsing PDF documentation sources
+beautifulsoup4>=4.12.0          # Parsing HTML documentation sources
