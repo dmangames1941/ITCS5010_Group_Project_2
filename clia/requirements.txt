@@ -39,3 +39,4 @@ torch>=2.2.0                    # Neural network support for embeddings and re-r
 langchain-text-splitters>=0.2.0 # Document splitting and chunking strategies
 pypdf>=4.2.0                    # Parsing PDF documentation sources
 beautifulsoup4>=4.12.0          # Parsing HTML documentation sources
+rank-bm25>=0.2.2                # BM25 keyword search for hybrid retrieval
