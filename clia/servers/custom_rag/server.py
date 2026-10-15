@@ -15,7 +15,7 @@ def search_library_docs(query: str, top_k: int = 5) -> dict:
 
     Use this tool to find documentation passages relevant to a coding
     question. Returns source filenames, chunk identifiers, and passage text.
-    The current collection contains synthetic sample documentation.
+    The collection includes LangChain Python documentation.
     """
     if not 1 <= top_k <= 20:
         raise ValueError("top_k must be between 1 and 20.")

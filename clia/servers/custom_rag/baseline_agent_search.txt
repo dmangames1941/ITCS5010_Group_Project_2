@@ -1,0 +1,106 @@
+﻿
+Result 1
+Source: langchain/quickstart.md
+Chunk index: 0
+Distance: 0.5388
+∩╗┐Source: https://docs.langchain.com/oss/python/langchain/quickstart.md
+Downloaded: 2026-10-15T13:12:28.7306313-04:00
+
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.langchain.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Quickstart
+
+> Build your first agent in minutes
+
+This quickstart shows you how to create a fully functional AI agent in just a few minutes.
+
+<Prompt description="Build the LangChain quickstart agent" icon="sparkles" actions={["copy"]}>
+  Build a basic LangChain agent in this working directory by following the LangChain quickstart.
+
+  ## Step 1: Read the guide
+
+  Detect whether this project uses Python or TypeScript/JavaScript. Fetch and follow the matching page; treat it as the source of truth for package names, model strings, and code:
+
+  * Python: [https://docs.langchain.com/oss/python/langchain/quickstart.md](https://docs.langchain.com/oss/python/langchain/quickstart.md)
+  * TypeScript:
+
+Result 2
+Source: langchain/quickstart.md
+Chunk index: 3
+Distance: 0.7044
+guess when a secret, provider choice, or project convention is unclear.
+</Prompt>
+
+<Tip>
+  **Using an AI coding assistant?**
+
+  * Install the [LangChain Docs MCP servers](/use-these-docs) to give your agent access to up-to-date LangChain documentation and examples.
+
+      <Prompt description="Connect LangChain docs MCP servers" icon="plug" actions={["copy"]}>
+        Connect both LangChain documentation MCP servers to my coding agent so it can look up current LangChain, LangGraph, and LangSmith docs and API reference.
+
+        Servers to add:
+
+        * `docs-langchain`: [https://docs.langchain.com/mcp](https://docs.langchain.com/mcp)
+        * `reference-langchain`: [https://reference.langchain.com/mcp](https://reference.langchain.com/mcp)
+
+        Detect which agent or editor I am using (Claude Code, Cursor, Codex CLI, Claude Desktop, Deep Agents Code, VS Code, Antigravity, or another MCP-compatible client). Use the matching setup from [https://docs.langchain.com/use-these-docs.md](h
+
+Result 3
+Source: langchain/quickstart.md
+Chunk index: 42
+Distance: 0.7689
+e `fetch_text_from_url` tool to gather information.
+    3. **Manages context** by using file system tools ([`grep`](/oss/python/deepagents/harness#virtual-filesystem-access) and [`read_file`](/oss/python/deepagents/harness#virtual-filesystem-access)).
+    4. **Spawns subagents** as needed to delegate complex subtasks to specialized subagents.
+
+    For LangChain agents, you must implement more capabilities to get a similar level of service and can customize them along the way as needed.
+  </Step>
+</Steps>
+
+## Trace agent calls
+
+Most interesting applications you build with LangChain make many calls to LLMs. As these applications get more complex, it becomes important to be able to inspect what exactly is going on inside your agent. The best way to do this is with [LangSmith](https://smith.langchain.com?utm_source=docs\&utm_medium=cta\&utm_campaign=langsmith-signup\&utm_content=oss-langchain-quickstart).
+
+Sign up for a [LangSmith](https://smith.langchain.com?utm_source=docs\&utm_medium=ct
+
+Result 4
+Source: langchain/quickstart.md
+Chunk index: 45
+Distance: 0.7971
+inal-2">
+    [Connect these docs](/use-these-docs) to your agent of choice via MCP for real-time answers.
+  </Callout>
+
+  <Callout icon="edit">
+    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/oss/langchain/quickstart.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
+  </Callout>
+</div>
+
+Result 5
+Source: langchain/quickstart.md
+Chunk index: 2
+Distance: 0.8137
+t in the shell or a `.env` file. Do not invent, hardcode, or commit API keys.
+
+  ## Step 4: Implement the basic agent
+
+  Create the "Build a basic agent" example from the guide: `create_agent`, a simple tool such as `get_weather`, a short system prompt, and an `invoke` call. Use a model string for the provider the user chose. Print the final message content (Python: `.content_blocks`) so the user can verify the run.
+
+  ## Step 5: Optional LangSmith tracing
+
+  Ask the user if they want tracing. If yes, ask them to set `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY` themselves, then re-run. Do not invent a LangSmith key.
+
+  ## Rules
+
+  * Stay scoped to this quickstart. Do not add unrelated frameworks, evals, or production deployment.
+  * Prefer `create_agent` from `langchain.agents` / `langchain` as shown in the guide.
+  * Ask rather than guess when a secret, provider choice, or project convention is unclear.
+</Prompt>
+
+<Tip>
+  **Using an AI coding assistant?**
+
+  * Install the [LangCha

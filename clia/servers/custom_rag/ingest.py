@@ -13,26 +13,81 @@ COLLECTION_NAME = "library_docs"
 
 
 def split_text(text, chunk_size=1000, overlap=150):
-    """Split text into overlapping character-based chunks."""
-    if not 0 <= overlap < chunk_size:
-        raise ValueError("Overlap must be between 0 and chunk_size - 1.")
+    """Group Markdown paragraphs and fenced code blocks into chunks.
+
+    chunk_size is a soft limit: a single code block may exceed it.
+    overlap is retained for compatibility but is not used here.
+    """
+    blocks = []
+    current_block = []
+    fence_char = None
+    fence_length = 0
+
+    for line in text.lstrip("\ufeff").splitlines():
+        stripped = line.lstrip()
+
+        # Recognize Markdown fences, including fences with language labels.
+        if stripped.startswith(("```", "~~~")):
+            char = stripped[0]
+            length = len(stripped) - len(stripped.lstrip(char))
+
+            if fence_char is None:
+                if current_block:
+                    blocks.append("\n".join(current_block).strip())
+                    current_block = []
+
+                fence_char = char
+                fence_length = length
+                current_block.append(line)
+                continue
+
+            if char == fence_char and length >= fence_length:
+                current_block.append(line)
+                blocks.append("\n".join(current_block).strip())
+                current_block = []
+                fence_char = None
+                fence_length = 0
+                continue
+
+        if fence_char is not None:
+            current_block.append(line)
+            continue
+
+        # Start a new block at a heading or blank line.
+        if not stripped or stripped.startswith("#"):
+            if current_block:
+                blocks.append("\n".join(current_block).strip())
+                current_block = []
+
+            if stripped:
+                current_block.append(line)
+        else:
+            current_block.append(line)
+
+    if current_block:
+        blocks.append("\n".join(current_block).strip())
 
     chunks = []
-    start = 0
+    current_chunk = ""
 
-    while start < len(text):
-        chunk = text[start:start + chunk_size].strip()
+    for block in blocks:
+        if not block:
+            continue
 
-        if chunk:
-            chunks.append(chunk)
+        candidate = (
+            f"{current_chunk}\n\n{block}" if current_chunk else block
+        )
 
-        if start + chunk_size >= len(text):
-            break
+        if current_chunk and len(candidate) > chunk_size:
+            chunks.append(current_chunk)
+            current_chunk = block
+        else:
+            current_chunk = candidate
 
-        start += chunk_size - overlap
+    if current_chunk:
+        chunks.append(current_chunk)
 
     return chunks
-
 
 def main():
     """Read documentation files and store their chunks and embeddings."""

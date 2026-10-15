@@ -29,7 +29,7 @@ async def main():
             result = await session.call_tool(
                 "search_library_docs",
                 arguments={
-                    "query": "How do I connect to the database?",
+                    "query": "How do I create a LangChain agent?",
                     "top_k": 3,
                 },
             )
