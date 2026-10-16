@@ -1,97 +1,101 @@
-import asyncio
+
+import json
 from typing import Any, Callable, Dict, List, Optional
+
 from clia.config import Settings
 from clia.engine.execution import ExecutionManager
 from clia.engine.state import AgentState
 from clia.providers.base import BaseProvider
 
+
 class AgentLoop:
     """
-    Orchestrates the main agentic loop:
-    1. Collect user input and update AgentState.
-    2. Query LLM provider with messages and available tool definitions.
-    3. If the model streams text, yield/render response tokens.
-    4. If the model emits tool calls, evaluate policy (confirm vs auto).
-    5. Execute tools via MCP client and append observations back into state.
-    6. Repeat until the model procuces a final user-facing response.
+    Manages the agentic loop:
+    1. Receive a user task.
+    2. Send messages and available tools to the LLM.
+    3. Execute requested MCP tools.
+    4. Return tool results to the LLM.
+    5. Repeat until the task is complete.
     """
 
     def __init__(
-            self,
-            provider: BaseProvider,
-            state: Optional[AgentState] = None,
-            execution_manager: Optional[ExecutionManager] = None,
-            mcp_client: Optional[Any] = None,
-            settings: Optional[Settings] = None,
-            max_iterations: int = 15
+        self,
+        provider: BaseProvider,
+        state: Optional[AgentState] = None,
+        execution_manager: Optional[ExecutionManager] = None,
+        mcp_client: Optional[Any] = None,
+        settings: Optional[Settings] = None,
+        max_iterations: int = 15
     ):
-        """
-        Args:
-            provider: Active LLM provider instance (Ollama OpenAI, Anthropic, etc)
-            state: Agent state tracking conversation history and system prompt
-            execution_manager: Policy manager handling confirm/auto tool execution
-            mcp_client: MCP client handling tool discovery and execution
-            settings: CLIA runtime configuration settings
-            max_interations: Guardrail against infinite agent tool-calling loops
-        """
         self.provider = provider
         self.settings = settings or Settings()
         self.state = state or AgentState()
-        self.execution_manager = (execution_manager or ExecutionManager(mode=self.settings.execution_mode))
+
+        self.execution_manager = (
+            execution_manager
+            or ExecutionManager(mode=self.settings.execution_mode)
+        )
+
         self.mcp_client = mcp_client
         self.max_iterations = max_iterations
 
     async def get_available_tools(self) -> List[Dict[str, Any]]:
-        """
-        Retrieves formatted tool schemas from the MCP client if connected.
-        """
-        if self.mcp_client and hasattr(self.mcp_cleint, "get_tools"):
+        """Retrieve available tools from connected MCP servers."""
+
+        if self.mcp_client and hasattr(self.mcp_client, "get_tools"):
             try:
                 tools = await self.mcp_client.get_tools()
                 return tools if isinstance(tools, list) else []
             except Exception as e:
                 print(f"[Warning] Failed to fetch MCP tools: {e}")
                 return []
+
         return []
 
-    async def execute_mcp_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Any:
-        """
-        Invokes a tool via the MCP client integration layer.
-        """
+    async def execute_mcp_tool(
+        self,
+        tool_name: str,
+        arguments: Dict[str, Any]
+    ) -> Any:
+        """Execute a tool through the MCP client."""
+
         if not self.mcp_client:
             raise RuntimeError("MCP client is not connected.")
 
         if hasattr(self.mcp_client, "call_tool"):
-            return await self.mcp_client.call_tool(tool_name, arguments)
-        elif hasattr(self.mcp_client, "execution_tool"):
-            return await self.mcp_client.execute_tool(tool_name, arguments)
-        else:
-            raise AttributeError("MCP client missing 'call_tool' or 'execute_tool' method.")
+            return await self.mcp_client.call_tool(
+                tool_name, arguments
+            )
+
+        elif hasattr(self.mcp_client, "execute_tool"):
+            return await self.mcp_client.execute_tool(
+                tool_name, arguments
+            )
+
+        raise AttributeError(
+            "MCP client missing 'call_tool' or 'execute_tool' method."
+        )
 
     async def run_turn(
-            self,
-            user_input: str,
-            token_callback: Optional[Callable[[str], None]] = None,
-            status_callback: Optional[Callable[[str], None]] = None
+        self,
+        user_input: str,
+        token_callback: Optional[Callable[[str], None]] = None,
+        status_callback: Optional[Callable[[str], None]] = None
     ) -> str:
-        """
-        Runs a single user-initiated turn through the agentic loop.
+        """Run an autonomous agent turn until completion."""
 
-        Args:
-            user_input: The user's input prompt or command.
-            token_callback: Optional callback for rendering streaming LLM response tokens.
-            status_callback: Optional callback for updating CLI status spinners/messages.
-        Returns:
-            Final assistant response text.
-        """
         self.state.add_user_message(user_input)
+
         iteration = 0
         final_text_response = ""
 
         while iteration < self.max_iterations:
             iteration += 1
+
             if status_callback:
-                status_callback(f"CLIA is thinking (iteration {iteration})...")
+                status_callback(
+                    f"CLIA is thinking (iteration {iteration})..."
+                )
 
             available_tools = await self.get_available_tools()
             full_messages = self.state.get_full_messages()
@@ -102,8 +106,18 @@ class AgentLoop:
                 token_callback=token_callback
             )
 
-            assistant_content = response.get("content", "")
-            tool_calls = response.get("tool_calls", [])
+            # Support both dictionary and Pydantic responses.
+            if isinstance(response, dict):
+                assistant_content = response.get("content") or ""
+                raw_tool_calls = response.get("tool_calls") or []
+            else:
+                assistant_content = response.content or ""
+                raw_tool_calls = response.tool_calls or []
+
+            tool_calls = [
+                call.model_dump() if hasattr(call, "model_dump") else call
+                for call in raw_tool_calls
+            ]
 
             self.state.add_assistant_message(
                 content=assistant_content,
@@ -113,37 +127,72 @@ class AgentLoop:
             if assistant_content:
                 final_text_response = assistant_content
 
+            # Stop when the model has no more tools to call.
             if not tool_calls:
                 break
 
-            for tool_calls in tool_calls:
-                call_id = tool_call.get("id", f"call_{iteration}")
-                tool_name = tool_call.get("name") or tool_call.get("function", {}).get("name")
-                arguments = tool_call.get("arguments") or tool_call.get("function", {}).get("arguments", {})
+            for index, tool_call in enumerate(tool_calls):
+                call_id = tool_call.get(
+                    "id", f"call_{iteration}_{index}"
+                )
+
+                function = tool_call.get("function") or {}
+
+                tool_name = (
+                    tool_call.get("name")
+                    or function.get("name")
+                )
+
+                arguments = tool_call.get("arguments")
+
+                if arguments is None:
+                    arguments = function.get("arguments", {})
 
                 if isinstance(arguments, str):
-                    import json
                     try:
                         arguments = json.loads(arguments)
                     except json.JSONDecodeError:
                         arguments = {"raw_input": arguments}
+
+                if not isinstance(arguments, dict):
+                    arguments = {"raw_input": str(arguments)}
+
+                if not tool_name:
+                    self.state.add_tool_result(
+                        tool_call_id=call_id,
+                        tool_name="unknown",
+                        content="Tool name was not provided."
+                    )
+                    continue
+
                 if status_callback:
-                    status_callback(f"Evaluating tool call '{tool_name}'...")
+                    status_callback(
+                        f"Evaluating tool call '{tool_name}'..."
+                    )
 
-                execution_result = await self.execution_manager.execute_or_skip(
-                    tool_call_id=call_id,
-                    tool_name=tool_name,
-                    arguments=arugments,
-                    executor_func=self.execute_mcp_tool
+                execution_result = (
+                    await self.execution_manager.execute_or_skip(
+                        tool_call_id=call_id,
+                        tool_name=tool_name,
+                        arguments=arguments,
+                        executor_func=self.execute_mcp_tool
+                    )
                 )
 
-                self.state.add_tool_results(
+                self.state.add_tool_result(
                     tool_call_id=call_id,
                     tool_name=tool_name,
-                    content=execution_result.get("content", "")
+                    content=str(
+                        execution_result.get("content", "")
+                    )
                 )
 
-            if iteration >= self.max_interations and status_callback:
-                status_callback("[Warning] Reached maximum tool loop iterations.")
+            # The next iteration sends tool results back to the LLM.
 
-            return final_text_response
+        else:
+            if status_callback:
+                status_callback(
+                    "[Warning] Reached maximum tool loop iterations."
+                )
+
+        return final_text_response
