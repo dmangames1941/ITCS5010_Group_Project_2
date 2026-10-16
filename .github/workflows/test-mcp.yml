@@ -48,3 +48,6 @@ jobs:
 
       - name: Test all three MCP servers
         run: python -m clia.cli.test_mcp
+      
+      - name: Test autonomous agent loop
+        run: python -m clia.cli.test_agent_loop
