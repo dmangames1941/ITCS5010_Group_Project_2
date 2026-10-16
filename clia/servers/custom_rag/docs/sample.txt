@@ -1,0 +1,5 @@
+﻿This is a synthetic document for testing the ingestion pipeline.
+
+The example library provides a function named connect_database.
+It accepts a database_url argument and returns a connection object.
+Call the connection object's close method when finished.

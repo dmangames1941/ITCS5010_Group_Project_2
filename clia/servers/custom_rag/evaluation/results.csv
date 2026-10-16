@@ -1,0 +1,25 @@
+case,mode,question,expected_sources,source_hit_at_5,source_reciprocal_rank_at_5,latency_ms
+1,vector,How do I create a LangChain agent?,langchain/quickstart.md,1,1.0,432.41
+1,hybrid,How do I create a LangChain agent?,langchain/quickstart.md,1,1.0,423.15
+2,vector,Show create_agent with a model and tools.,langchain/quickstart.md,1,0.25,367.94
+2,hybrid,Show create_agent with a model and tools.,langchain/quickstart.md,1,0.3333333333333333,399.01
+3,vector,How do I define a tool using the @tool decorator?,langchain/tools.md,1,1.0,370.18
+3,hybrid,How do I define a tool using the @tool decorator?,langchain/tools.md,1,1.0,409.72
+4,vector,How do I customize a tool name and description?,langchain/tools.md,1,1.0,395.51
+4,hybrid,How do I customize a tool name and description?,langchain/tools.md,1,1.0,401.44
+5,vector,How can I define a tool input schema with Pydantic?,langchain/tools.md,1,0.2,378.96
+5,hybrid,How can I define a tool input schema with Pydantic?,langchain/tools.md,1,0.5,394.82
+6,vector,How do I initialize a chat model with init_chat_model?,langchain/models.md,1,0.5,371.41
+6,hybrid,How do I initialize a chat model with init_chat_model?,langchain/models.md,1,0.5,398.45
+7,vector,How do I stream a chat model response?,langchain/models.md,1,0.5,358.93
+7,hybrid,How do I stream a chat model response?,langchain/models.md,1,1.0,390.49
+8,vector,How do I bind tools to a model using bind_tools?,langchain/models.md,1,1.0,358.71
+8,hybrid,How do I bind tools to a model using bind_tools?,langchain/models.md,1,1.0,410.51
+9,vector,"What are SystemMessage, HumanMessage, and AIMessage?",langchain/messages.md,1,1.0,369.54
+9,hybrid,"What are SystemMessage, HumanMessage, and AIMessage?",langchain/messages.md,1,1.0,403.42
+10,vector,How do I return a tool result using ToolMessage?,langchain/messages.md,1,0.5,389.28
+10,hybrid,How do I return a tool result using ToolMessage?,langchain/messages.md,1,1.0,433.51
+11,vector,How do I add short-term memory using a checkpointer?,langchain/short-term-memory.md,1,0.5,348.76
+11,hybrid,How do I add short-term memory using a checkpointer?,langchain/short-term-memory.md,1,0.5,414.91
+12,vector,How does thread_id identify a conversation with memory?,langchain/short-term-memory.md,1,0.5,368.22
+12,hybrid,How does thread_id identify a conversation with memory?,langchain/short-term-memory.md,1,0.3333333333333333,382.23
