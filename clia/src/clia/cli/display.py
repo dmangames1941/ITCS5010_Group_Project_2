@@ -35,7 +35,7 @@ def display_tool_confirmation(tool_name: str, arguments: dict[str, Any]) -> None
     panel = Panel(
         args_syntax,
         title=f"[bold yellow]Proposed Tool Execution: {tool_name}[/bold yellow]",
-        subtitle="[dim]Requires approval[/dim]"
+        subtitle="[dim]Requires approval[/dim]",
         border_style="yellow",
         expand=False
     )
