@@ -1,3 +1,4 @@
+
 import json
 from typing import Any, Dict
 from rich.console import Console
@@ -7,23 +8,25 @@ from rich.text import Text
 
 console = Console()
 
+
 def display_welome_banner(mode: str = "confirm", provider: str = "ollama") -> None:
     """
     Renders the startup banner when CLIA launches.
     """
     banner_text = Text()
     banner_text.append("CLIA", style="bold cyan")
-    banner_text.append(" - Command Line Interfacce Assistant\n", style="bold white")
+    banner_text.append(" - Command Line Interface Assistant\n", style="bold white")
     banner_text.append(f"Provider: {provider} | Mode: {mode}\n", style="dim white")
     banner_text.append("Type 'exit' or 'quit' to end the session.", style="italic dim white")
 
     panel = Panel(
         banner_text,
         title="[bold cyan]Welcome[/bold cyan]",
-        border_style="cyan"
+        border_style="cyan",
         expand=False
     )
     console.print(panel)
+
 
 def display_tool_confirmation(tool_name: str, arguments: dict[str, Any]) -> None:
     """
@@ -40,6 +43,7 @@ def display_tool_confirmation(tool_name: str, arguments: dict[str, Any]) -> None
         expand=False
     )
     console.print(panel)
+
 
 def display_tool_results(tool_name: str, result: str, status: str = "success") -> None:
     """
@@ -59,8 +63,10 @@ def display_tool_results(tool_name: str, result: str, status: str = "success") -
     )
     console.print(panel)
 
+
 def print_status(message: str) -> None:
     """
     Prints a status update message.
     """
-    console.print(f"[dim cyam]-> {message}[/dim cyan]")
+    console.print(f"[dim cyan]-> {message}[/dim cyan]")
+
