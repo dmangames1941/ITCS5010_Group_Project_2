@@ -5,8 +5,8 @@ from prompt_toolkit.styles import Style
 _history = InMemoryHistory()
 
 _prompt_style = Style.from_dict({
-    "prompt_prefix": "#cyan bold#",
-    "prompt_symbol": "#white bold#"
+    "prompt_prefix": "bold #00ffff",
+    "prompt_symbol": "bold #ffffff"
 })
 
 def get_user_prompt(prompt_label: str = "clia> ") -> str:
